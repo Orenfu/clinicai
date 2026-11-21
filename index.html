@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ClinicAI Health</title>
+<meta name="description" content="ClinicAI Health is building an autonomous AI clinician for primary care, developed in partnership with Accountable Care Organizations.">
+<meta property="og:title" content="ClinicAI Health">
+<meta property="og:description" content="Primary care that scales without more physicians.">
+</head>
+<body>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --paper:#F3F6F4;
+    --surface:#FFFFFF;
+    --ink:#101B1A;
+    --ink-soft:#45524F;
+    --ink-faint:#7C8B87;
+    --teal:#0B6E62;
+    --teal-deep:#063D37;
+    --teal-tint:rgba(11,110,98,0.08);
+    --signal:#D9491F;
+    --signal-tint:rgba(217,73,31,0.10);
+    --line:rgba(16,27,26,0.14);
+    --line-strong:rgba(16,27,26,0.30);
+    --shadow:0 1px 2px rgba(16,27,26,0.06);
+    --font-display:'Fraunces',Georgia,'Iowan Old Style',serif;
+    --font-body:'IBM Plex Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --font-mono:'IBM Plex Mono','SFMono-Regular',Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0A1514;
+      --surface:#0F1E1C;
+      --ink:#E9F2EF;
+      --ink-soft:#A7BFB9;
+      --ink-faint:#5E756F;
+      --teal:#57D0BB;
+      --teal-deep:#0C443C;
+      --teal-tint:rgba(87,208,187,0.10);
+      --signal:#FF8659;
+      --signal-tint:rgba(255,134,89,0.12);
+      --line:rgba(233,242,239,0.14);
+      --line-strong:rgba(233,242,239,0.30);
+      --shadow:0 1px 2px rgba(0,0,0,0.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0A1514;
+    --surface:#0F1E1C;
+    --ink:#E9F2EF;
+    --ink-soft:#A7BFB9;
+    --ink-faint:#5E756F;
+    --teal:#57D0BB;
+    --teal-deep:#0C443C;
+    --teal-tint:rgba(87,208,187,0.10);
+    --signal:#FF8659;
+    --signal-tint:rgba(255,134,89,0.12);
+    --line:rgba(233,242,239,0.14);
+    --line-strong:rgba(233,242,239,0.30);
+    --shadow:0 1px 2px rgba(0,0,0,0.3);
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--font-body);
+    font-size:16px;
+    line-height:1.55;
+    padding-inline:20px;
+  }
+  @media (min-width:720px){ body{ padding-inline:40px; } }
+
+  .wrap{ max-width:1080px; margin:0 auto; }
+  .prose{ max-width:65ch; }
+
+  h1,h2,h3{ font-family:var(--font-display); font-weight:600; text-wrap:balance; margin:0; color:var(--ink); }
+  a{ color:inherit; }
+  p{ margin:0; }
+  ul{ margin:0; padding:0; list-style:none; }
+
+  :focus-visible{ outline:2px solid var(--teal); outline-offset:3px; }
+
+  /* ---------- topbar ---------- */
+  .topbar{
+    max-width:1080px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    padding-block:22px;
+    gap:16px;
+  }
+  .wordmark{
+    font-family:var(--font-display); font-weight:700; font-size:1.15rem; letter-spacing:-0.01em;
+    white-space:nowrap;
+  }
+  .wordmark em{ font-style:italic; color:var(--teal); }
+  nav.toplinks{ display:none; gap:26px; font-size:0.88rem; color:var(--ink-soft); }
+  nav.toplinks a{ text-decoration:none; border-bottom:1px solid transparent; padding-block:2px; }
+  nav.toplinks a:hover{ border-color:var(--teal); color:var(--ink); }
+  @media (min-width:760px){ nav.toplinks{ display:flex; } }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:var(--font-body); font-weight:600; font-size:0.86rem;
+    padding:10px 18px; border-radius:3px; text-decoration:none;
+    white-space:nowrap; border:1px solid transparent;
+  }
+  .btn-primary{ background:var(--ink); color:var(--paper); }
+  .btn-primary:hover{ background:var(--teal-deep); }
+  .btn-line{ border-color:var(--line-strong); color:var(--ink); }
+  .btn-line:hover{ border-color:var(--teal); color:var(--teal); }
+
+  /* ---------- hero ---------- */
+  .hero{ padding-block:36px 48px; }
+  .eyebrow{
+    font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--teal); display:flex; align-items:center; gap:10px; margin-bottom:18px;
+  }
+  .eyebrow::before{ content:''; width:22px; height:1px; background:var(--teal); display:inline-block; }
+  .hero h1{ font-size:clamp(2.1rem,5vw,3.3rem); line-height:1.08; max-width:16ch; }
+  .hero h1 i{ font-style:italic; color:var(--teal); }
+  .hero .lede{ margin-top:20px; max-width:56ch; font-size:1.08rem; color:var(--ink-soft); }
+  .hero .byline{ margin-top:26px; font-size:0.85rem; color:var(--ink-faint); }
+  .hero .byline strong{ color:var(--ink-soft); font-weight:600; }
+
+  .vitals{
+    margin-top:38px;
+    border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+    display:grid; grid-template-columns:repeat(2,1fr);
+  }
+  @media (min-width:640px){ .vitals{ grid-template-columns:repeat(4,1fr); } }
+  .vital{ padding:18px 18px 18px 0; border-right:1px solid var(--line); }
+  .vital:nth-child(2n){ border-right:none; }
+  @media (min-width:640px){
+    .vital{ border-right:1px solid var(--line); }
+    .vital:nth-child(2n){ border-right:1px solid var(--line); }
+    .vital:last-child{ border-right:none; }
+  }
+  .vital .num{ font-family:var(--font-mono); font-weight:600; font-size:1.7rem; color:var(--ink); font-variant-numeric:tabular-nums; }
+  .vital .lbl{ margin-top:4px; font-size:0.78rem; color:var(--ink-faint); max-width:20ch; }
+
+  .waveform{ display:block; width:100%; height:34px; margin-block:6px; color:var(--line-strong); }
+  .waveform path{ fill:none; stroke:currentColor; stroke-width:1.4; }
+  .waveform .pulse{ stroke:var(--signal); opacity:0.75; }
+
+  /* ---------- section scaffold ---------- */
+  section.chart{ padding-block:56px; border-top:1px solid var(--line); position:relative; }
+  .chart-head{ display:flex; align-items:flex-start; gap:22px; margin-bottom:34px; }
+  .chart-tag{
+    font-family:var(--font-mono); font-weight:600; font-size:2.6rem; line-height:1;
+    color:var(--teal-tint); background:var(--teal-tint);
+    width:56px; height:56px; min-width:56px; border-radius:3px;
+    display:flex; align-items:center; justify-content:center; color:var(--teal);
+  }
+  .chart-head-text .k{ font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-faint); }
+  .chart-head-text h2{ font-size:clamp(1.5rem,3vw,2rem); margin-top:4px; }
+  .chart-intro{ color:var(--ink-soft); max-width:62ch; margin-bottom:30px; font-size:1rem; }
+
+  /* failure cards */
+  .grid-3{ display:grid; gap:1px; background:var(--line); border:1px solid var(--line); grid-template-columns:1fr; }
+  @media (min-width:720px){ .grid-3{ grid-template-columns:repeat(3,1fr); } }
+  .fail-card{ background:var(--surface); padding:22px; }
+  .fail-card h3{ font-size:1rem; font-weight:600; font-family:var(--font-body); }
+  .fail-card p{ margin-top:8px; font-size:0.92rem; color:var(--ink-soft); }
+  .fail-card .who{ font-family:var(--font-mono); font-size:0.72rem; color:var(--ink-faint); margin-bottom:6px; display:block; }
+
+  .closer-line{
+    margin-top:26px; padding-top:20px; border-top:1px dashed var(--line-strong);
+    font-family:var(--font-display); font-style:italic; font-size:1.15rem; color:var(--ink);
+  }
+
+  /* capability grid */
+  .grid-cap{ display:grid; gap:1px; background:var(--line); border:1px solid var(--line); grid-template-columns:1fr; }
+  @media (min-width:640px){ .grid-cap{ grid-template-columns:repeat(2,1fr); } }
+  @media (min-width:980px){ .grid-cap{ grid-template-columns:repeat(4,1fr); } }
+  .cap-card{ background:var(--surface); padding:20px; }
+  .cap-card .ico{ width:26px; height:26px; color:var(--teal); margin-bottom:12px; }
+  .cap-card h3{ font-size:0.95rem; font-family:var(--font-body); font-weight:600; }
+  .cap-card p{ margin-top:6px; font-size:0.85rem; color:var(--ink-soft); }
+  .reg-note{ margin-top:22px; font-size:0.85rem; color:var(--ink-faint); border-left:2px solid var(--teal); padding-left:14px; }
+
+  .subhead{
+    margin-top:48px; margin-bottom:20px; display:flex; align-items:baseline; gap:12px;
+  }
+  .subhead h3{ font-size:1.1rem; font-family:var(--font-body); font-weight:600; }
+  .subhead .rule{ flex:1; height:1px; background:var(--line-strong); }
+
+  /* plan / dual track */
+  .dual{ display:grid; grid-template-columns:1fr; gap:1px; background:var(--line); border:1px solid var(--line); }
+  @media (min-width:860px){ .dual{ grid-template-columns:1fr 1fr; } }
+  .dual.solo{ grid-template-columns:1fr; }
+  .dual.solo .track{ padding:34px clamp(26px,4vw,54px); }
+  .dual.solo .value-grid{ grid-template-columns:repeat(2,1fr); }
+  @media (min-width:640px){ .dual.solo .value-grid{ grid-template-columns:repeat(3,1fr); } }
+  .track{ background:var(--surface); padding:30px 26px; display:flex; flex-direction:column; gap:20px; }
+  .track .track-k{ font-family:var(--font-mono); font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-faint); }
+  .track h3{ font-size:1.35rem; }
+  .track .desc{ color:var(--ink-soft); font-size:0.94rem; }
+
+  .value-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .value-grid .v{ font-size:0.85rem; }
+  .value-grid .v b{ display:block; color:var(--ink); font-weight:600; }
+  .value-grid .v span{ color:var(--ink-faint); font-size:0.8rem; }
+
+  .steps{ counter-reset:st; display:flex; flex-direction:column; gap:12px; }
+  .steps li{ counter-increment:st; display:flex; gap:12px; font-size:0.88rem; color:var(--ink-soft); align-items:baseline; }
+  .steps li::before{
+    content:counter(st); font-family:var(--font-mono); font-weight:600; color:var(--paper); background:var(--teal);
+    width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+    font-size:0.68rem; flex-shrink:0; transform:translateY(2px);
+  }
+  .steps b{ color:var(--ink); font-weight:600; }
+
+  .team{ display:grid; grid-template-columns:1fr; gap:18px; }
+  @media (min-width:600px){ .team{ grid-template-columns:1fr 1fr; } }
+  .person .name{ font-family:var(--font-display); font-weight:600; font-size:1.02rem; }
+  .person .role{ font-family:var(--font-mono); font-size:0.7rem; color:var(--teal); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px; }
+  .person p{ margin-top:8px; font-size:0.85rem; color:var(--ink-soft); }
+
+  .cta-row{ margin-top:6px; display:flex; flex-wrap:wrap; gap:10px; }
+
+  footer{
+    border-top:1px solid var(--line); margin-top:10px; padding-block:34px 46px;
+    display:flex; flex-wrap:wrap; justify-content:space-between; gap:20px;
+  }
+  footer .wordmark{ margin-bottom:6px; }
+  footer .f-note{ font-size:0.78rem; color:var(--ink-faint); max-width:40ch; }
+  footer .f-contact{ font-size:0.85rem; color:var(--ink-soft); text-align:right; }
+  footer .f-contact a{ text-decoration:none; color:var(--teal); }
+  @media (max-width:600px){ footer .f-contact{ text-align:left; } }
+</style>
+
+<div class="topbar wrap">
+  <div class="wordmark">Clinic<em>AI</em> Health</div>
+  <nav class="toplinks">
+    <a href="#need">Need</a>
+    <a href="#solution">Solution</a>
+    <a href="#plan">Partner</a>
+  </nav>
+  <a class="btn btn-primary" href="#plan">Get in touch</a>
+</div>
+
+<main class="wrap">
+
+  <section class="hero">
+    <div class="eyebrow">Autonomous primary care, built with ACOs</div>
+    <h1>Primary care that scales without <i>more physicians.</i></h1>
+    <p class="lede">ClinicAI Health is building an autonomous AI clinician — multimodal, always on, and trained in the shadow of real telehealth visits — to close the primary-care gap that neither more clinics nor more chatbots can close.</p>
+    <p class="byline"><strong>Dr. Oren Fuerst</strong>, CEO &amp; Co-Founder · <strong>Dr. Giora Weisz</strong>, CMO &amp; Co-Founder</p>
+
+    <svg class="waveform" viewBox="0 0 600 34" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 17 H210 L222 6 L234 28 L246 17 H600" />
+      <path class="pulse" d="M210 17 L222 6 L234 28 L246 17" />
+    </svg>
+
+    <div class="vitals">
+      <div class="vital"><div class="num">187K</div><div class="lbl">US primary-care physician shortfall by 2037</div></div>
+      <div class="vital"><div class="num">100M+</div><div class="lbl">Americans without adequate primary-care access</div></div>
+      <div class="vital"><div class="num">12M</div><div class="lbl">Outpatient diagnostic errors every year</div></div>
+      <div class="vital"><div class="num">$32B</div><div class="lbl">Avoidable ER spend from preventable visits, per year</div></div>
+    </div>
+  </section>
+
+  <!-- S — SUBJECTIVE -->
+  <section class="chart" id="need">
+    <div class="chart-head">
+      <div class="chart-tag">S</div>
+      <div class="chart-head-text">
+        <div class="k">Subjective</div>
+        <h2>The problem, as every ACO already reports it</h2>
+      </div>
+    </div>
+    <p class="chart-intro">Shortage → access gap → missed diagnoses and ER overuse → higher spend. It's one chain, and the tools on the market today only ever touch one link of it.</p>
+
+    <div class="grid-3">
+      <div class="fail-card">
+        <span class="who">Telehealth · K Health, Teladoc</span>
+        <h3>Can't scale beyond physician supply</h3>
+        <p>Every visit still consumes a clinician hour. The shortage that limits the clinic limits the video call too — access grows only as fast as hiring does.</p>
+      </div>
+      <div class="fail-card">
+        <span class="who">Chatbots · Ada Health, Infermedica</span>
+        <h3>Can't observe the patient</h3>
+        <p>Symptom checkers triage from typed text. They can't see, hear, or examine — so they escalate defensively and add work instead of absorbing it.</p>
+      </div>
+      <div class="fail-card">
+        <span class="who">Ambient scribes · Nuance, Abridge</span>
+        <h3>Document but don't diagnose</h3>
+        <p>Saves minutes of paperwork per encounter, delivers no new capacity — the physician still runs every visit and makes every call.</p>
+      </div>
+    </div>
+
+    <p class="closer-line">Primary care doesn't need a faster chatbot or a better scribe. It needs a clinician-shaped technology.</p>
+  </section>
+
+  <!-- O — OBJECTIVE -->
+  <section class="chart" id="solution">
+    <div class="chart-head">
+      <div class="chart-tag">O</div>
+      <div class="chart-head-text">
+        <div class="k">Objective</div>
+        <h2>What ClinicAI actually observes, reasons, and does</h2>
+      </div>
+    </div>
+    <p class="chart-intro">One platform, eight capabilities, built on a partnership with a frontier AI model maker (confidential) — observing the patient, reasoning like a clinician, and completing the visit end to end.</p>
+
+    <div class="grid-cap">
+      <div class="cap-card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.2"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+        <h3>Multimodal assessment</h3>
+        <p>Body language, facial expression, pain, voice &amp; respiratory biomarkers, mood, skin screening, rPPG vitals.</p>
+      </div>
+      <div class="cap-card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 19V5a1 1 0 0 1 1-1h9l6 6v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M14 4v5h5"/><path d="M8 13h8M8 16h5"/></svg>
+        <h3>Clinical knowledge</h3>
+        <p>Evidence-based medicine and current practice guidelines, applied through dynamic clinical algorithms.</p>
+      </div>
+      <div class="cap-card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5v5l3.2 2"/></svg>
+        <h3>Medical reasoning</h3>
+        <p>Clinical guardrails, differential diagnosis, and a working hypothesis for every patient, every visit.</p>
+      </div>
+      <div class="cap-card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 3 7v6c0 5 4 8 9 8s9-3 9-8V7l-9-4Z"/><path d="M9 12.5l2 2 4-4.5"/></svg>
+        <h3>Emergency triage</h3>
+        <p>Flags life-threatening or organ-compromising presentations; separates acute cases from stable ones.</p>
+      </div>
+      <div class="cap-card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 3h6l1 3H8l1-3Z"/><path d="M6 6h12l-1 15H7L6 6Z"/><path d="M10 11h4"/></svg>
+        <h3>Full care delivery</h3>
+        <p>Lab orders, specialty referrals, prescription routing, and drug-interaction checks.</p>
+      </div>
+      <div class="cap-card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21c-4-3-8-6.5-8-11a5 5 0 0 1 8-4 5 5 0 0 1 8 4c0 4.5-4 8-8 11Z"/></svg>
+        <h3>Care 360</h3>
+        <p>Longitudinal chronic-disease management, prevention, patient education, wellness &amp; longevity coaching.</p>
+      </div>
+      <div class="cap-card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8.5"/><path d="M12 6.5v6l4 2.2"/></svg>
+        <h3>Always on</h3>
+        <p>24/7, multilingual, proactive follow-up, and family-member updates — no waiting room, ever.</p>
+      </div>
+      <div class="cap-card">
+        <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3 4 6.5V12c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6.5L12 3Z"/></svg>
+        <h3>Regulatory-first</h3>
+        <p>Built on the IDx-DR precedent, HIPAA compliant, with a high bar for cybersecurity from day one.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- P — PLAN -->
+  <section class="chart" id="plan">
+    <div class="chart-head">
+      <div class="chart-tag">P</div>
+      <div class="chart-head-text">
+        <div class="k">Plan</div>
+        <h2>Partner with us</h2>
+      </div>
+    </div>
+    <p class="chart-intro">The visit data and clinical population that make the model safer, sooner — no capital commitment required to begin.</p>
+
+    <div class="dual solo">
+      <div class="track">
+        <div class="track-k">For ACOs &amp; health systems</div>
+        <h3>Shape it, train it, deploy it first</h3>
+        <p class="desc">Your telemedicine visit library seeds the model; your clinicians define the guardrails. No capital commitment to begin.</p>
+
+        <div class="value-grid">
+          <div class="v"><b>Extend the workforce</b><span>24/7 care, no added physician hours</span></div>
+          <div class="v"><b>Close the access gap</b><span>Same-day, multilingual, nights &amp; weekends</span></div>
+          <div class="v"><b>Cut avoidable utilization</b><span>Triage steers ER &amp; admissions to the right level</span></div>
+          <div class="v"><b>Perform on quality &amp; cost</b><span>Strengthens exactly what ACO contracts reward</span></div>
+          <div class="v"><b>Shape the platform</b><span>Trained on your population, your workflows</span></div>
+          <div class="v"><b>First-mover terms</b><span>Priority deployment, founding-partner pricing</span></div>
+        </div>
+
+        <ol class="steps">
+          <li><span><b>Wellness access</b> — start now, non-clinical use for members</span></li>
+          <li><span><b>Visit-library review</b> — de-identified, federated, HIPAA-compliant</span></li>
+          <li><span><b>Pilot: AI shadowing</b> — gradual deployment against real visits</span></li>
+          <li><span><b>Scaled collaboration</b> — full deployment on founding-partner terms</span></li>
+        </ol>
+
+        <div class="cta-row">
+          <a class="btn btn-primary" href="mailto:info@clinicai.com?subject=ClinicAI%20—%20ACO%20partnership">Propose a pilot</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="subhead"><h3>Who you'd work with</h3><div class="rule"></div></div>
+    <div class="team">
+      <div class="person">
+        <div class="name">Dr. Oren Fuerst</div>
+        <div class="role">CEO &amp; Co-Founder</div>
+        <p>Serial entrepreneur holding 30+ patents. Ph.D., Columbia Business School; Yale faculty. Led DarioHealth (NASDAQ: DRIO) to IPO within two years. Deep FDA regulatory and capital-markets expertise.</p>
+      </div>
+      <div class="person">
+        <div class="name">Dr. Giora Weisz</div>
+        <div class="role">CMO &amp; Co-Founder</div>
+        <p>World-renowned interventional cardiologist. Former Director of Clinical Research, Center for Interventional Vascular Therapy, Columbia University Medical Center. Extensive clinical-trial and FDA submission experience.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>
+      <div class="wordmark">Clinic<em>AI</em> Health</div>
+      <p class="f-note">ClinicAI Health is building an autonomous AI clinician for primary care, developed in partnership with Accountable Care Organizations. Overview current as of September 2026.</p>
+    </div>
+    <div class="f-contact">
+      Get in touch with us<br>
+      <a href="mailto:info@clinicai.com">info@clinicai.com</a>
+    </div>
+  </footer>
+</main>
+</body>
+</html>
